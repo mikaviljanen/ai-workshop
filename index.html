@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Making work suck less</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #004A43; --deep: #00352F; --glow: #07554D; --paper: #F3EFE2; --paper-2: #FAF7EE; --hair: #DDD8C8;
+    --pink: #ECCCE3; --cream: #E9E3CF; --crimson: #B3122A; --lime: #ADCB00; --ink: #1C2422; --grey: #55605C; --white: #FFFFFF;
+    --serif: 'Playfair Display', Georgia, serif; --sans: 'Noto Sans', Arial, sans-serif; --r: 14px; --r-sm: 10px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; font: 17px/1.6 var(--sans); color: var(--ink); min-height: 100vh;
+         background: radial-gradient(1100px 600px at 85% -10%, var(--glow), transparent 70%), var(--deep); background-attachment: fixed; }
+  #dayBar { position: fixed; top: 0; left: 0; height: 3px; background: var(--lime); z-index: 10; transition: width 1s; }
+  #dayTrack { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,.08); z-index: 9; }
+  header { color: var(--white); padding: 34px 24px 0; }
+  header .wrap { max-width: 1080px; margin: 0 auto; }
+  header .logo { display: block; width: 170px; height: auto; margin-bottom: 30px; }
+  header .kicker { margin: 0 0 8px; color: var(--lime); font-weight: 800; font-size: .76rem; letter-spacing: 3px; text-transform: uppercase; }
+  header h1 { margin: 0 0 8px; font: 800 3.4rem/1.02 var(--serif); letter-spacing: -.01em; }
+  header p.sub { margin: 0 0 26px; color: var(--cream); font-size: 1.08rem; }
+  nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 22px; }
+  nav a { color: var(--cream); text-decoration: none; padding: 8px 16px 9px; white-space: nowrap; font-size: .95rem; font-weight: 600; border-radius: 999px; }
+  nav a .t { display: block; font-size: .74rem; font-weight: 400; opacity: .75; }
+  nav a:hover { background: rgba(255,255,255,.07); }
+  nav a.active { background: var(--paper); color: var(--green); }
+  nav a.now:not(.active) { box-shadow: inset 0 0 0 2px var(--lime); color: var(--white); }
+  main { max-width: 1080px; margin: 0 auto 40px; padding: 52px 60px 44px; background: var(--paper); border-radius: var(--r);
+         box-shadow: 0 30px 80px rgba(0,20,17,.45), 0 4px 14px rgba(0,20,17,.25); }
+  section { display: none; }
+  section.active { display: block; }
+  .step-kicker { margin: 0 0 10px; color: var(--crimson); font-weight: 800; font-size: .74rem; letter-spacing: 2.5px; text-transform: uppercase; }
+  h2 { margin: 0 0 14px; font: 800 2.9rem/1.05 var(--serif); color: var(--green); letter-spacing: -.01em; }
+  h3 { margin: 34px 0 10px; font: 800 1.45rem/1.2 var(--serif); color: var(--green); }
+  .card h3 { margin: 0 0 8px; font: 700 1.05rem/1.3 var(--sans); }
+  .card strong { color: var(--green); }
+  .lead { color: var(--grey); margin: 0 0 22px; font-size: 1.12rem; max-width: 800px; }
+  .card { background: var(--paper-2); border: 1px solid var(--hair); padding: 20px 22px; margin: 12px 0; border-radius: var(--r); }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .grid .card { margin: 0; }
+  .tip { background: var(--paper-2); }
+  .warn { background: var(--pink); border-color: transparent; }
+  .warn strong { color: var(--crimson); }
+  form.card { background: var(--white); }
+  label { display: block; font-weight: 700; margin: 14px 0 5px; }
+  label small { font-weight: 400; color: var(--grey); }
+  input, textarea, select { width: 100%; font: inherit; padding: 9px 12px; border: 1px solid #D3CDB9; border-radius: var(--r-sm); background: var(--white); color: var(--ink); }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,74,67,.15); }
+  textarea { min-height: 72px; resize: vertical; }
+  button { font: 600 1rem var(--sans); cursor: pointer; border: 0; border-radius: 999px; padding: 10px 22px; background: var(--green); color: var(--white); transition: transform .08s, background .15s; }
+  button:hover:not(:disabled) { background: var(--deep); }
+  button:active:not(:disabled) { transform: scale(.97); }
+  button.ghost { background: transparent; color: var(--green); box-shadow: inset 0 0 0 2px var(--green); }
+  button.ghost:hover:not(:disabled) { background: var(--cream); }
+  button.small { padding: 5px 14px; font-size: .88rem; }
+  button:disabled { opacity: .5; cursor: default; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .muted { color: var(--grey); }
+  .status { font-size: .9rem; min-height: 1.4em; color: var(--grey); }
+  #board, #pickedList { border-top: 1px solid var(--hair); }
+  .entry { border-bottom: 1px solid var(--hair); padding: 16px 4px; }
+  .entry.picked { background: var(--pink); border-radius: var(--r); padding: 16px 18px; margin: 8px 0; border-bottom-color: transparent; }
+  .entry.built { background: var(--cream); border-radius: var(--r); padding: 16px 18px; margin: 8px 0; border-bottom-color: transparent; }
+  .entry.parked { opacity: .5; }
+  .entry h4 { margin: 0 0 3px; font: 700 1.3rem/1.25 var(--serif); color: var(--green); }
+  .entry .meta { font-size: .76rem; color: var(--crimson); font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+  .entry details { margin-top: 8px; font-size: .95rem; }
+  .entry summary { cursor: pointer; color: var(--green); font-weight: 600; }
+  .entry dl { margin: 8px 0 0; display: grid; grid-template-columns: 130px 1fr; gap: 6px 14px; }
+  .entry dt { color: var(--crimson); font-weight: 800; font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase; padding-top: 3px; }
+  .entry dd { margin: 0; white-space: pre-wrap; }
+  .pill { display: inline-block; font: 800 .68rem var(--sans); padding: 3px 10px; background: var(--cream); margin-left: 8px; vertical-align: middle; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 999px; }
+  .pill.picked, .pill.built { background: var(--green); color: var(--white); }
+  .votes { font: 800 1.7rem var(--serif); font-variant-numeric: lining-nums; color: var(--green); min-width: 1.6em; text-align: center; }
+  .cols { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  pre.brief { white-space: pre-wrap; background: var(--deep); color: var(--paper); padding: 22px; font: .86rem/1.6 ui-monospace, Menlo, Consolas, monospace; max-height: 500px; overflow: auto; margin: 0; border-radius: var(--r); }
+  table.agenda { width: 100%; border-collapse: collapse; border-top: 1px solid var(--hair); margin-bottom: 18px; }
+  table.agenda td { padding: 12px 6px; border-bottom: 1px solid var(--hair); vertical-align: baseline; }
+  table.agenda td:first-child { white-space: nowrap; color: var(--crimson); font-weight: 800; font-size: .76rem; letter-spacing: 2px; width: 22%; }
+  table.agenda td:last-child { font-weight: 600; }
+  table.agenda tr.now td:last-child { color: var(--green); }
+  table.agenda tr.now td:first-child::after { content: '  · now'; color: var(--green); }
+  .banner { padding: 12px 18px; margin: 0 auto 18px; max-width: 1080px; font-size: .92rem; border-radius: var(--r); background: rgba(255,255,255,.08); color: var(--cream); }
+  .banner button.ghost { color: var(--lime); box-shadow: inset 0 0 0 2px var(--lime); }
+  .banner button.ghost:hover { background: rgba(255,255,255,.06); }
+  .fac-only { display: none; }
+  body.fac .fac-only { display: inline-flex; }
+  ol.steps li, ul.tight li { margin: 5px 0; }
+  ol.steps { padding-left: 1.3em; }
+  ul.tight { padding-left: 1.2em; margin: 8px 0 0; }
+  a { color: var(--green); }
+  .navbtns { margin-top: 40px; justify-content: space-between; border-top: 1px solid var(--hair); padding-top: 22px; }
+  details.more { margin-top: 14px; border-top: 1px solid var(--hair); padding-top: 10px; }
+  details.more summary { cursor: pointer; font-weight: 700; color: var(--green); }
+  label.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 600; margin-top: 16px; }
+  label.check input { width: auto; margin-top: 5px; }
+  .fac-row select { width: auto; padding: 4px 8px; font-size: .88rem; }
+  footer { text-align: center; color: var(--cream); font-size: .85rem; padding: 6px 24px 40px; opacity: .8; }
+  @media (max-width: 720px) {
+    header h1 { font-size: 2.3rem; } header .logo { width: 140px; margin-bottom: 22px; }
+    h2 { font-size: 2rem; } main { padding: 32px 20px 30px; margin: 0 10px 30px; }
+    nav a { padding: 7px 12px 8px; font-size: .88rem; }
+    .entry dl { grid-template-columns: 1fr; } .entry dt { margin-top: 6px; }
+    .banner { margin: 0 10px 14px; }
+  }
+</style>
+</head>
+<body>
+<div id="dayTrack"></div><div id="dayBar"></div>
+<header>
+  <div class="wrap">
+    <svg class="logo" role="img" aria-label="University of Turku" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 922 285"><path fill="#FFFFFF" fill-rule="evenodd" d="M123 280C122 279 122 276 122 274C122 269 122 268 120 266C116 263 116 257 119 253L122 250L121 231C121 209 119 190 118 183C116 176 110 173 104 178C99 182 91 180 91 174C91 170 89 169 86 170C83 170 82 170 80 168C77 166 77 165 77 161C78 156 77 156 74 154C68 152 67 148 70 143C71 140 71 140 68 137C64 134 64 129 67 126C69 123 69 120 67 120C66 120 63 114 64 112C64 111 65 110 66 108C68 106 68 106 67 104C64 100 64 96 68 93C69 92 71 91 71 91C74 91 75 89 74 86C72 82 74 77 79 75C82 74 83 72 79 71C77 70 76 66 62 31L57 17L59 14C62 10 65 8 69 7C75 6 77 8 77 14C78 16 78 21 79 24C80 26 80 31 81 35C83 50 86 66 88 78L90 91L87 98C77 116 76 134 85 152C93 170 113 175 117 160C118 156 118 136 117 115C116 97 115 94 108 90C104 88 103 87 103 84C103 76 111 72 126 72C135 72 139 73 144 76C147 78 147 79 147 83C147 88 147 88 142 90C137 94 135 97 134 107C132 120 133 158 134 162C140 172 150 171 160 160C169 150 172 139 172 124C171 113 170 110 165 99C161 92 160 88 162 82C162 80 163 76 164 72C166 57 170 34 172 22C174 9 175 7 180 7C186 7 193 13 193 18C193 19 190 27 187 35C184 43 180 54 178 59C175 66 174 69 172 70C168 72 168 74 172 75C176 76 178 81 177 86C176 88 176 90 177 90C185 92 188 97 185 102C183 106 183 106 185 109C188 112 188 116 184 119C182 122 181 123 184 126C188 129 187 134 183 137C180 140 180 140 181 143C184 148 183 152 177 155C174 156 174 156 174 160C174 166 170 170 165 170C162 169 160 170 160 174C160 177 156 180 153 180C151 180 148 179 146 178C138 174 134 176 132 188C131 196 129 225 129 240C129 250 129 250 132 254C136 258 136 261 132 266C130 268 129 270 129 274C129 279 129 280 127 280C125 280 124 280 123 280ZM517 220C487 210 478 170 501 148C510 139 518 136 532 136C546 136 554 139 563 148C582 167 579 200 558 215C547 222 530 224 517 220ZM706 221C696 218 697 219 697 209C697 200 696 200 705 204C712 206 728 206 732 203C738 198 735 193 723 188C709 182 705 180 701 175C694 168 694 155 699 147C701 144 708 139 713 137C720 135 743 136 747 139C748 140 749 156 748 156C747 156 745 155 742 154C736 151 722 151 718 153C711 158 712 164 722 169C726 170 732 173 736 175C747 180 753 188 753 198C753 208 748 216 738 220C731 222 713 223 706 221ZM860 220C842 214 831 199 830 179C830 160 841 144 858 138C865 136 881 135 887 137C907 144 919 160 918 182C917 200 906 214 890 220C883 222 867 223 860 220ZM337 220C336 220 336 213 336 204L336 188L330 178C326 172 320 161 315 154C311 146 307 139 307 138C307 137 309 137 316 137L326 137L329 141C330 144 334 151 338 157C341 164 345 169 345 169C346 169 347 168 348 166C349 164 351 160 353 158C354 155 358 149 360 145L364 137L374 137C380 137 384 137 384 138C384 138 377 150 369 163L354 188L354 203C354 212 354 220 354 220C353 221 338 221 337 220ZM393 220C393 220 393 201 393 179C393 157 393 139 393 138C393 137 397 137 402 137L411 137L411 171L412 205L427 205L442 206L442 213L442 220L418 221C402 221 393 221 393 220ZM456 220C455 219 455 207 455 178L456 138L464 138L474 138L474 179L474 220L465 221C460 221 457 221 456 220ZM591 220C591 220 591 201 591 179C591 157 591 138 591 138C591 137 597 137 610 137C629 138 630 138 635 140C646 146 650 152 650 164C649 182 640 191 620 192L610 192L609 206L608 220L600 221C594 221 591 221 591 220ZM664 220C663 220 663 201 663 178L663 137L672 137L681 137L681 179L680 220L672 221C668 221 664 221 664 220ZM782 220C782 219 782 204 782 186L782 152L770 152L759 152L759 144L759 137L791 137L824 138L824 144L824 152L812 152C804 152 801 152 801 153C801 154 801 169 801 186C801 208 801 219 800 220C798 222 783 222 782 220ZM93 219C91 218 91 217 93 207C94 204 95 199 96 194C98 186 98 186 101 185C103 184 104 184 104 184C106 185 103 218 102 219C100 220 96 220 93 219ZM148 219C148 218 147 210 147 201L146 184L149 184C153 185 154 186 155 193C156 196 157 203 158 208L160 216L158 218C156 220 150 221 148 219ZM77 217C74 215 74 213 81 198C88 180 88 180 91 183L93 185L90 198C89 205 88 212 87 213C86 218 83 219 77 217ZM165 217C165 216 163 210 162 204C158 184 158 185 160 183C162 180 162 180 165 186C170 197 174 207 176 210C177 213 177 213 175 216C172 218 167 219 165 217ZM62 210C56 206 56 206 68 189C77 176 79 174 81 174C87 174 87 174 80 189C79 192 76 197 74 202C70 211 68 212 62 210ZM178 204C176 201 175 198 175 198C175 197 167 180 166 178C164 175 165 174 168 174C172 173 172 173 179 183C195 206 195 206 189 209C182 212 181 212 178 204ZM543 203C559 196 562 172 550 160C533 143 507 155 507 180C507 199 526 211 543 203ZM882 204C893 201 899 192 899 179C899 167 894 158 884 154C866 147 849 160 849 179C849 198 864 210 882 204ZM48 200C46 199 45 198 44 196C43 194 43 194 46 190C49 188 55 182 61 176C72 166 72 166 74 168C74 169 75 170 75 171C74 174 54 202 52 202C51 202 49 201 48 200ZM191 193C187 188 183 181 180 178C176 171 175 170 177 168C179 166 180 166 191 178C198 184 204 190 206 192C209 195 209 195 204 199C199 204 198 203 191 193ZM36 190C33 189 30 184 30 182C30 180 36 176 49 168C66 157 67 156 70 157C71 158 72 159 72 159C72 160 40 191 39 191C39 191 38 190 36 190ZM204 184C187 168 179 160 179 159C179 159 180 158 182 157C184 156 185 157 197 165C205 170 213 175 216 177C222 181 222 182 218 187C214 192 212 192 204 184ZM624 176C629 174 631 170 631 165C631 156 626 152 615 152L609 152L609 164C609 170 609 176 610 176C611 178 621 177 624 176ZM23 173C21 171 20 169 20 166C20 163 20 163 24 161C34 156 62 146 63 146C63 147 63 148 63 150C64 153 63 154 46 165C36 171 27 176 27 176C26 176 24 175 23 173ZM220 175C219 174 211 169 203 163C188 154 187 152 187 150C187 148 188 147 188 146C189 146 212 155 222 160C224 160 227 161 228 162C232 163 232 168 228 173C226 176 224 177 220 175ZM14 156C12 153 11 152 11 149L12 145L28 142C54 136 60 136 61 137C64 139 63 141 51 146C44 148 36 151 34 153C28 155 18 159 17 159C16 159 15 158 14 156ZM228 157C225 156 221 154 219 153C216 152 208 149 201 146C194 143 188 140 188 139C188 136 191 136 198 137C217 140 239 144 239 145C241 147 239 154 237 157C234 160 234 160 228 157ZM9 138C5 134 4 127 6 124C7 122 10 122 34 123C48 124 60 125 60 125C62 126 59 131 57 131C56 132 50 133 44 134C38 135 28 137 22 138C9 140 11 140 9 138ZM231 138C227 138 218 136 210 134C203 133 196 132 194 131C192 131 189 126 191 125C192 124 243 122 244 123C246 125 246 134 243 137C241 140 240 140 231 138ZM38 119C32 118 24 118 18 118C6 118 5 117 5 108C5 100 6 99 18 102C26 104 46 110 57 114C58 114 59 114 59 115C59 115 59 116 60 118C60 120 60 120 53 120C50 120 42 119 38 119ZM191 119C191 115 192 114 199 112C223 105 240 100 242 100C246 100 248 109 245 115L243 118L227 118C219 119 207 119 201 120C192 120 191 120 191 119ZM408 108C398 106 391 99 387 90C386 86 386 82 386 56L386 26L394 25L403 25L403 51C403 67 403 79 404 82C408 95 429 98 435 85C437 82 437 78 437 53L437 25L446 25C452 25 455 25 455 26C455 27 455 41 455 57C455 91 454 94 446 101C437 109 422 112 408 108ZM574 109C565 106 558 101 554 94C552 90 552 88 551 57L551 25L560 25L568 26L569 54C569 84 569 86 575 90C581 94 592 94 597 89C602 85 602 84 602 53C602 39 602 27 603 26C603 25 606 25 612 25L620 26L621 53C621 82 620 89 616 95C612 102 606 106 598 108C593 110 579 110 574 109ZM50 107C46 106 39 104 34 102C15 97 10 95 8 94C7 92 7 85 8 81C11 75 10 75 52 99C62 105 63 106 61 108C59 109 58 109 50 107ZM190 108C190 107 189 106 189 106C189 104 237 77 239 78C246 80 245 96 239 96C238 96 234 97 231 98C227 99 223 100 221 101C215 103 203 106 198 108C193 109 192 109 190 108ZM334 108C333 108 333 92 333 74L333 40L322 40L310 40L310 32L310 25L342 25L375 25L375 32L374 40L363 40L352 40L351 74L350 108L342 109C338 109 334 109 334 108ZM475 108C474 108 474 89 474 66L474 25L492 25C519 25 526 27 532 38C535 43 536 44 536 52C536 60 535 61 532 66C531 68 528 72 525 73C523 75 521 76 521 77C521 77 525 84 529 92C534 102 537 108 536 108C536 109 532 109 527 109L518 108L511 95C504 80 503 79 498 79C492 79 492 79 492 94L492 108L484 109C479 109 475 109 475 108ZM640 108C638 107 639 24 640 24C641 24 652 34 665 47C678 59 689 70 690 70C691 70 691 67 691 48L691 25L700 25L709 25L709 67C709 93 709 109 708 109C707 109 700 102 668 72C664 67 659 63 658 63C657 63 657 66 657 86L656 108L648 109C644 109 640 109 640 108ZM48 92C32 82 31 82 28 81C16 74 15 73 15 70C13 65 18 56 22 56C23 56 32 64 43 74C60 91 62 92 61 95C61 96 60 98 59 98C59 98 54 95 48 92ZM190 95C189 93 189 92 208 74C218 64 227 56 228 56C231 56 234 59 236 64C238 70 237 73 229 77C225 79 218 83 213 86C207 89 203 92 202 92C202 92 200 93 197 95C192 99 191 99 190 95ZM45 70C24 50 24 50 28 42C30 38 34 35 36 37C37 38 39 40 41 43C48 55 64 80 66 82C69 86 68 88 66 88C64 88 58 82 45 70ZM183 86C183 86 185 82 187 78C193 70 212 40 214 37C216 33 225 42 225 48C225 51 224 53 216 60C211 65 203 73 197 78C188 88 183 90 183 86ZM63 69C60 64 53 54 49 47C40 32 39 30 42 26C46 20 52 18 54 22C54 24 58 33 62 43C66 53 70 64 71 67C73 72 73 72 72 75C71 76 70 78 69 78C69 78 66 74 63 69ZM179 75C177 72 177 72 179 68C180 65 182 62 182 60C182 59 183 57 184 56C184 55 187 48 190 40C197 22 198 20 200 20C204 20 211 27 211 31C211 32 207 39 202 47C197 55 190 65 188 70C185 74 182 78 182 78C182 78 180 77 179 75ZM106 66C105 65 104 61 104 57C104 49 104 49 115 33C119 27 119 26 119 21C118 15 119 7 121 5C123 4 123 5 124 10C125 13 126 17 128 19C129 22 130 25 129 25C129 26 126 30 123 34C114 45 112 49 112 60C112 68 112 68 110 69C109 69 108 68 106 66ZM134 68C130 67 126 66 123 67C118 67 117 66 117 58C117 51 120 45 129 33C133 28 137 22 138 21C140 17 141 18 141 25C141 32 139 37 133 48C129 54 128 58 130 60C133 63 138 58 136 54C135 51 139 43 142 43C144 43 146 54 146 59C145 64 142 69 141 69C140 69 137 68 134 68ZM511 63C515 61 517 57 517 52C517 43 512 40 500 40L492 40L492 52L492 64L500 64C505 64 510 64 511 63ZM110 24C110 20 110 17 110 17C111 17 114 22 114 24C114 26 111 32 110 32C110 32 110 29 110 24Z"/></svg>
+    <p class="kicker">Faculty of Law · Staff AI workshop</p>
+    <h1>Making work suck less<span class="dot">.</span></h1>
+    <p class="sub">Bring the task you hate. Leave with a tool. 10:00 to 15:00.</p>
+    <nav id="nav"></nav>
+  </div>
+</header>
+
+<div id="modeBanner" class="banner" hidden></div>
+<main>
+
+  <!-- 0 START -->
+  <section id="start">
+    <h2>Pick one task you hate. Make it hurt less by 15:00.</h2>
+    <p class="lead">Each group picks one hated task, briefs Claude and builds a small tool for it. Then we show what worked and what didn't.</p>
+    <table class="agenda" id="agenda"></table>
+    <div class="card warn">
+      <strong>Off limits all day.</strong> Anything that handles students' personal data, and anything that connects to email or calendars. Everything typed into this page is visible to everyone here.
+    </div>
+  </section>
+
+  <section id="name">
+    <h2>What do you hate doing?</h2>
+    <p class="lead">One research or teaching task per entry. A task you did last month beats a general complaint.</p>
+    <div class="cols">
+      <form id="entryForm" class="card" autocomplete="off">
+        <div class="row" style="gap:12px; align-items:flex-end">
+          <div style="flex:1; min-width:140px"><label>Group</label><select name="group" id="groupSelect" required></select></div>
+          <div style="flex:1; min-width:140px"><label>First name <small>(optional)</small></label><input name="author" maxlength="60"></div>
+        </div>
+        <label>The task, in a few words</label>
+        <input name="title" required maxlength="120" placeholder="Turning reading notes into a literature table">
+        <label>What do you actually do?</label>
+        <textarea name="description" placeholder="I open each PDF, copy the abstract, paste it into Excel…"></textarea>
+        <label>Why does it suck?</label>
+        <textarea name="pain" placeholder="Two days of copy-paste every project."></textarea>
+        <details class="more">
+          <summary>More detail <small>(makes the brief better)</small></summary>
+          <label>How often?</label>
+          <input name="frequency" placeholder="every semester / per article">
+          <label>What goes in?</label>
+          <textarea name="inputs" placeholder="PDFs, a call text, last year's descriptions"></textarea>
+          <label>What should come out?</label>
+          <textarea name="outputs" placeholder="A table with one row per source"></textarea>
+          <label>How would you know it's solved?</label>
+          <textarea name="done" placeholder="I check the result instead of producing it."></textarea>
+        </details>
+        <label class="check">
+          <input type="checkbox" name="noStudentData" value="yes" required>
+          <span>It never touches students' personal data, email or calendars.</span>
+        </label>
+        <div class="row" style="margin-top:14px">
+          <button type="submit">Add to the board</button>
+          <span class="status" id="entryStatus"></span>
+        </div>
+      </form>
+      <div>
+        <div class="card tip">
+          <strong>Good bets.</strong> Converting formats, pulling the same facts out of many documents, rewriting near-identical texts, checking a draft against a list of requirements.
+        </div>
+        <div class="card warn">
+          <strong>Not today.</strong> Grading, feedback on student work, thesis supervision, admissions, student registers, inboxes and calendars.
+        </div>
+        <h3>On the board</h3>
+        <div id="miniList" class="muted">Loading…</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pick">
+    <h2>Which one hurts most people?</h2>
+    <p class="lead">Click <em>Me too</em> on every task you also suffer from. Then pick one that you can test with made-up input and that has a clear test for success. If two tie, take the smaller.</p>
+    <div class="row toolbar">
+      <select id="boardFilter" style="width:auto"></select>
+      <select id="boardSort" style="width:auto">
+        <option value="votes">Most votes</option>
+        <option value="new">Newest</option>
+      </select>
+      <button class="ghost small" id="refreshBtn" type="button">Refresh</button>
+      <span class="status muted" id="boardStatus"></span>
+    </div>
+    <div id="board"></div>
+  </section>
+
+  <section id="brief">
+    <h2>Brief Claude, don't prompt it</h2>
+    <p class="lead">Pick your group's task and the kind of tool. The facilitator copies the brief into Claude.</p>
+    <div class="cols">
+      <div class="card">
+        <label>Task</label>
+        <select id="briefEntry"></select>
+        <label>Kind of tool</label>
+        <select id="briefShape">
+          <option value="app">An app without AI: forms, templates, converters</option>
+          <option value="aiapp">An app with Claude inside: reading, extracting, drafting</option>
+          <option value="prompt">No app: a reusable instruction set</option>
+        </select>
+        <label>Anything else Claude should know? <small>(optional)</small></label>
+        <textarea id="briefExtra" placeholder="Course descriptions follow the Peppi template, in Finnish and English."></textarea>
+        <div class="row" style="margin-top:12px">
+          <button type="button" id="copyBrief">Copy brief</button>
+          <span class="status" id="briefStatus"></span>
+        </div>
+      </div>
+      <pre class="brief" id="briefOut">Pick a task to generate the brief.</pre>
+    </div>
+    <h3>Who does what</h3>
+    <div class="grid">
+      <div class="card"><strong>Driver.</strong> The facilitator types and runs the tool.</div>
+      <div class="card"><strong>Owner.</strong> It's their task, so they decide what's good enough.</div>
+      <div class="card"><strong>Tester.</strong> Makes fake inputs and tries to break the tool.</div>
+      <div class="card"><strong>Sceptic.</strong> Asks every 20 minutes: would anyone use this, and how would we know it failed?</div>
+    </div>
+  </section>
+
+  <section id="build">
+    <h2>Build in ten-minute loops</h2>
+    <div class="card">
+      <ol class="steps">
+        <li><strong>Smallest useful version first.</strong> Only the step that hurts most.</li>
+        <li><strong>Test at once</strong> on a fake input the tester has ready.</li>
+        <li><strong>Say what went wrong,</strong> not how to fix it.</li>
+        <li><strong>One change at a time,</strong> then rerun the same test.</li>
+        <li><strong>Write down what failed.</strong> Failures are half the demo.</li>
+      </ol>
+    </div>
+    <div class="grid">
+      <div class="card tip"><strong>Stuck 15 minutes?</strong> Wave at the floating facilitator.</div>
+      <div class="card tip"><strong>Going in circles?</strong> New chat: the brief plus three lines on what you learned.</div>
+      <div class="card warn"><strong>Lunch 12:00–12:45.</strong> Save first and note the next step.</div>
+    </div>
+    <h3>Being built</h3>
+    <div id="pickedList" class="muted">Loading…</div>
+  </section>
+
+  <section id="show">
+    <h2>Show it, warts and all</h2>
+    <p class="lead">Five minutes per group. Run it on an input it hasn't seen.</p>
+    <div class="cols">
+      <form id="showForm" class="card" autocomplete="off">
+        <label>Which task?</label>
+        <select id="showEntry" required></select>
+        <label>Link to the tool <small>(optional)</small></label>
+        <input name="appLink" placeholder="https://claude.ai/…">
+        <label>What worked, what broke, would you use it on Monday?</label>
+        <textarea name="lessons" style="min-height:120px"></textarea>
+        <div class="row" style="margin-top:12px">
+          <button type="submit">Add to the gallery</button>
+          <span class="status" id="showStatus"></span>
+        </div>
+      </form>
+      <div class="card">
+        <strong>Every demo answers</strong>
+        <ol class="steps">
+          <li>What did the task look like before?</li>
+          <li>What does the tool do now?</li>
+          <li>Where does it still need a human?</li>
+          <li>Who would do what to use it next week?</li>
+          <li>How would we notice wrong results?</li>
+        </ol>
+      </div>
+    </div>
+    <h3>Gallery</h3>
+    <div id="gallery" class="muted">Nothing yet.</div>
+    <div class="card tip" style="margin-top:22px">
+      <strong>To finish: the slow way.</strong> A search tool over Finnish Supreme Court and EU Court of Justice case law, with Claude citing the decisions. It shows what lies beyond a day's work.
+    </div>
+  </section>
+
+  <div class="row navbtns">
+    <button class="ghost" id="prevBtn" type="button">← Previous</button>
+    <button id="nextBtn" type="button">Next →</button>
+  </div>
+</main>
+
+<footer>
+  <span id="facToggle" style="cursor:pointer; text-decoration: underline dotted">Facilitator mode</span>
+  <form id="facForm" class="row" style="justify-content:center; margin-top:8px" hidden>
+    <input id="facKeyInput" type="password" placeholder="Facilitator key" style="width:200px">
+    <button class="small" type="submit">Unlock</button>
+    <span class="status" id="facStatus"></span>
+  </form>
+</footer>
+
+<script>
+/* ===== CONFIG: edit these before publishing ===== */
+const CONFIG = {
+  // Paste the Apps Script web app URL here (ends in /exec). Leave empty for local demo mode.
+  apiUrl: 'https://script.google.com/macros/s/AKfycbxa6RRlONxbztArg3jrdQhsABK0k14rinsTX_jP0jfeYZRZfNtzBledqG8LqchiMrYa/exec',
+  groups: ['Group 1', 'Group 2'],
+  // Workshop timetable. Times are local.
+  agenda: [
+    { id: 'start', label: 'Start', from: '10:00', to: '10:20', what: 'Why we are here, and a live demo' },
+    { id: 'name',  label: 'Name',  from: '10:20', to: '10:40', what: 'Everyone names a task they hate' },
+    { id: 'pick',  label: 'Pick',  from: '10:40', to: '11:00', what: 'Each group picks the one that hurts most' },
+    { id: 'brief', label: 'Brief', from: '11:00', to: '11:15', what: 'Write the brief, split the roles' },
+    { id: 'build', label: 'Build', from: '11:15', to: '14:15', what: 'Build. Lunch 12:00–12:45' },
+    { id: 'show',  label: 'Show',  from: '14:15', to: '15:00', what: 'Demos, the case-law search, wrap-up' }
+  ]
+};
+/* ================================================ */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const safeLink = u => /^https?:\/\//i.test(String(u || '').trim()) ? String(u).trim() : '';
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const apiUrl = new URLSearchParams(location.search).get('api') || CONFIG.apiUrl;
+const LOCAL = !apiUrl;
+let entries = [];
+let facKey = store.get('wk_fac_key', '');
+
+/* ---------- API ---------- */
+async function apiList() {
+  if (LOCAL) return store.get('wk_local_entries', []);
+  const r = await fetch(apiUrl + (apiUrl.includes('?') ? '&' : '?') + 't=' + Date.now());
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'Could not load entries');
+  return j.entries;
+}
+async function apiPost(body) {
+  if (LOCAL) return localPost(body);
+  // text/plain keeps this a "simple" request, so Apps Script needs no CORS preflight.
+  const r = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'Request failed');
+  return j;
+}
+function localPost(body) {
+  const list = store.get('wk_local_entries', []);
+  const now = new Date().toISOString();
+  const find = id => { const e = list.find(x => x.id === id); if (!e) throw new Error('No entry with that id.'); return e; };
+  let entry;
+  if (body.action === 'add') {
+    entry = Object.assign({ id: Math.random().toString(16).slice(2, 10), created: now, updated: now, votes: 0, status: 'open', appLink: '', lessons: '' }, body.entry);
+    list.push(entry);
+  } else if (body.action === 'vote') { entry = find(body.id); entry.votes = (entry.votes || 0) + 1; }
+  else if (body.action === 'status') { entry = find(body.id); entry.status = body.status; }
+  else if (body.action === 'showcase') { entry = find(body.id); Object.assign(entry, body.fields); }
+  else if (body.action === 'checkKey') { return { ok: true }; }
+  store.set('wk_local_entries', list);
+  return { ok: true, entry };
+}
+
+async function refresh(quiet) {
+  try {
+    if (!quiet) $('#boardStatus').textContent = 'Loading…';
+    entries = await apiList();
+    renderAll();
+    $('#boardStatus').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } catch (e) {
+    $('#boardStatus').textContent = 'Could not load: ' + e.message;
+  }
+}
+
+/* ---------- Navigation ---------- */
+const ids = CONFIG.agenda.map(a => a.id);
+function toMin(hm) { const [h, m] = hm.split(':').map(Number); return h * 60 + m; }
+function currentId() {
+  const d = new Date(), n = d.getHours() * 60 + d.getMinutes();
+  const a = CONFIG.agenda.find(x => n >= toMin(x.from) && n < toMin(x.to));
+  return a ? a.id : null;
+}
+function renderDayBar() {
+  const d = new Date(), n = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
+  const a = toMin(CONFIG.agenda[0].from), b = toMin(CONFIG.agenda[CONFIG.agenda.length - 1].to);
+  const on = n >= a && n <= b;
+  $('#dayTrack').hidden = $('#dayBar').hidden = !on;
+  $('#dayBar').style.width = (on ? (n - a) / (b - a) * 100 : 0) + '%';
+}
+CONFIG.agenda.forEach((a, i) => {
+  const s = document.getElementById(a.id); if (!s) return;
+  const k = document.createElement('p'); k.className = 'step-kicker';
+  k.textContent = (i === 0 ? 'The day' : 'Step ' + i) + ' · ' + a.from + '–' + a.to;
+  s.insertBefore(k, s.firstChild);
+});
+function renderNav() {
+  renderDayBar();
+  const cur = location.hash.slice(1) || ids[0], now = currentId();
+  $('#nav').innerHTML = CONFIG.agenda.map((a, i) =>
+    `<a href="#${a.id}" class="${a.id === cur ? 'active' : ''} ${a.id === now ? 'now' : ''}">${i}. ${esc(a.label)}<span class="t">${a.from}–${a.to}</span></a>`).join('');
+  $('#agenda').innerHTML = CONFIG.agenda.map(a =>
+    `<tr class="${a.id === now ? 'now' : ''}"><td>${a.from}–${a.to}</td><td>${esc(a.what)}</td></tr>`).join('');
+  document.querySelectorAll('main section').forEach(s => s.classList.toggle('active', s.id === cur));
+  const i = ids.indexOf(cur);
+  $('#prevBtn').style.visibility = i > 0 ? 'visible' : 'hidden';
+  $('#nextBtn').style.visibility = i < ids.length - 1 ? 'visible' : 'hidden';
+}
+$('#prevBtn').onclick = () => { const i = ids.indexOf(location.hash.slice(1) || ids[0]); location.hash = ids[Math.max(0, i - 1)]; window.scrollTo(0, 0); };
+$('#nextBtn').onclick = () => { const i = ids.indexOf(location.hash.slice(1) || ids[0]); location.hash = ids[Math.min(ids.length - 1, i + 1)]; window.scrollTo(0, 0); };
+window.addEventListener('hashchange', () => { renderNav(); window.scrollTo(0, 0); });
+
+/* ---------- Rendering ---------- */
+const myGroup = () => store.get('wk_group', '');
+const voted = () => store.get('wk_voted', []);
+const shown = () => entries.filter(e => e.status !== 'deleted');
+
+function entryCard(e, opts = {}) {
+  const hasVoted = voted().includes(e.id);
+  const status = e.status && e.status !== 'open' ? `<span class="pill ${esc(e.status)}">${esc(e.status)}</span>` : '';
+  const fields = [['Steps', e.description], ['Why it hurts', e.pain], ['How often', e.frequency], ['In', e.inputs], ['Out', e.outputs], ['Solved when', e.done]]
+    .filter(f => f[1]).map(f => `<dt>${f[0]}</dt><dd>${esc(f[1])}</dd>`).join('');
+  const fac = `<span class="fac-only fac-row row" style="gap:6px"><span class="muted" style="font-size:.85rem">Status</span><select data-status-for="${esc(e.id)}">${['open', 'picked', 'built', 'parked'].map(s => `<option ${s === (e.status || 'open') ? 'selected' : ''}>${s}</option>`).join('')}</select></span>`;
+  return `<div class="entry ${esc(e.status || '')}">
+    <div class="row" style="justify-content:space-between; align-items:flex-start">
+      <div style="flex:1; min-width:200px">
+        <h4>${esc(e.title)}${status}</h4>
+        <div class="meta">${esc(e.group)}${e.author ? ' · ' + esc(e.author) : ''}</div>
+      </div>
+      ${opts.vote === false ? '' : `<div class="row"><span class="votes" title="Me too votes">${e.votes || 0}</span>
+        <button class="small ${hasVoted ? 'ghost' : ''}" data-vote="${esc(e.id)}" type="button" ${hasVoted ? 'disabled' : ''}>${hasVoted ? 'Voted' : 'Me too'}</button></div>`}
+    </div>
+    ${fields ? `<details ${opts.open ? 'open' : ''}><summary>Details</summary><dl>${fields}</dl></details>` : ''}
+    <div class="row" style="margin-top:6px">${fac}</div>
+  </div>`;
+}
+
+function renderAll() {
+  const filter = $('#boardFilter').value || 'all';
+  const sort = $('#boardSort').value;
+  let list = shown().filter(e => filter === 'all' || e.group === filter);
+  list.sort(sort === 'new' ? (a, b) => String(b.created).localeCompare(String(a.created))
+                           : (a, b) => (b.votes || 0) - (a.votes || 0) || String(a.created).localeCompare(String(b.created)));
+  $('#board').innerHTML = list.length ? list.map(e => entryCard(e)).join('') : '<p class="muted">No entries yet.</p>';
+
+  const mine = shown().filter(e => !myGroup() || e.group === myGroup());
+  $('#miniList').innerHTML = mine.length
+    ? '<ul class="tight">' + mine.map(e => `<li>${esc(e.title)} <span class="muted">(${esc(e.group)}, ${e.votes || 0} votes)</span></li>`).join('') + '</ul>'
+    : 'Nothing yet. Be the first.';
+
+  const picked = shown().filter(e => e.status === 'picked' || e.status === 'built');
+  $('#pickedList').innerHTML = picked.length ? picked.map(e => entryCard(e, { vote: false, open: true })).join('') : 'Nothing picked yet.';
+
+  const opts = (sel, preferPicked) => {
+    const el = $(sel), prev = el.value;
+    const pool = shown().slice().sort((a, b) => {
+      const p = x => (x.status === 'picked' || x.status === 'built') ? 0 : 1;
+      return preferPicked ? p(a) - p(b) || (b.votes || 0) - (a.votes || 0) : 0;
+    });
+    el.innerHTML = '<option value="">Choose…</option>' + pool.map(e =>
+      `<option value="${esc(e.id)}">${e.status === 'picked' || e.status === 'built' ? '★ ' : ''}${esc(e.title)} (${esc(e.group)})</option>`).join('');
+    if (pool.some(e => e.id === prev)) el.value = prev;
+  };
+  opts('#briefEntry', true);
+  opts('#showEntry', true);
+  renderBrief();
+
+  const built = shown().filter(e => e.appLink || e.lessons);
+  $('#gallery').innerHTML = built.length ? built.map(e => {
+    const link = safeLink(e.appLink);
+    return `<div class="entry built"><h4>${esc(e.title)}</h4><div class="meta">${esc(e.group)}</div>
+      ${link ? `<p><a href="${esc(link)}" target="_blank" rel="noopener">Open the tool</a></p>` : ''}
+      ${e.lessons ? `<p style="white-space:pre-wrap">${esc(e.lessons)}</p>` : ''}</div>`;
+  }).join('') : 'Nothing yet.';
+}
+
+/* ---------- Brief ---------- */
+const SHAPES = {
+  app: `Build a small single-file web app (HTML, CSS and JavaScript in one file) that runs in the browser with no server and no AI calls. Use it as an artifact I can open and share.`,
+  aiapp: `Build a small single-file web app (HTML, CSS and JavaScript in one file) that uses Claude inside the app for the language-heavy steps (reading, summarising, extracting, drafting). Use it as an artifact I can open and share. Keep everything that does not need language understanding as ordinary code, so it is predictable.`,
+  prompt: `Do not build an app. Write a reusable instruction set (for a Claude project or a skill) that I can give you each time I do this task, plus one worked example showing it in use.`
+};
+function buildBrief() {
+  const e = entries.find(x => x.id === $('#briefEntry').value);
+  if (!e) return '';
+  const part = (h, v) => v ? `\n## ${h}\n${v}\n` : '';
+  return `I want your help removing a workflow that colleagues at our law faculty hate.
+
+## What to make
+${SHAPES[$('#briefShape').value]}
+${part('The workflow', e.title + (e.description ? '\n' + e.description : ''))}${part('Why it hurts', [e.pain, e.frequency ? 'It happens ' + e.frequency + '.' : ''].filter(Boolean).join(' '))}${part('What goes in', e.inputs)}${part('What should come out', e.outputs)}${part('How we will know it works', e.done)}${part('More context', $('#briefExtra').value.trim())}
+## Ground rules
+- Start with the smallest version that removes the worst step. We will add features afterwards, one at a time.
+- No logins, no external services, no personal data. We will test with made-up samples only.
+- No email or calendar integrations of any kind. Do not use or suggest mail or calendar connectors.
+- The tool must never be used with students' personal data. Do not design for it.
+- Before building, ask us up to three questions if anything important is unclear.
+- After building, tell us how to test it in two minutes, and list what it does NOT do yet.
+- If a step needs human judgement, say so instead of pretending to automate it.`;
+}
+function renderBrief() { $('#briefOut').textContent = buildBrief() || 'Pick a task to generate the brief.'; }
+['#briefEntry', '#briefShape', '#briefExtra'].forEach(s => $(s).addEventListener('input', renderBrief));
+$('#copyBrief').onclick = async () => {
+  const t = buildBrief();
+  if (!t) { $('#briefStatus').textContent = 'Pick a task first.'; return; }
+  try { await navigator.clipboard.writeText(t); $('#briefStatus').textContent = 'Copied.'; }
+  catch (e) {
+    const r = document.createRange(); r.selectNodeContents($('#briefOut'));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    $('#briefStatus').textContent = 'Selected. Press Ctrl+C / Cmd+C.';
+  }
+};
+
+/* ---------- Forms and clicks ---------- */
+$('#entryForm').onsubmit = async ev => {
+  ev.preventDefault();
+  const f = ev.target, btn = f.querySelector('button');
+  const data = Object.fromEntries(new FormData(f).entries());
+  btn.disabled = true; $('#entryStatus').textContent = 'Saving…';
+  try {
+    await apiPost({ action: 'add', entry: data });
+    store.set('wk_group', data.group);
+    const g = data.group, a = data.author;
+    f.reset(); f.group.value = g; f.author.value = a;
+    $('#entryStatus').innerHTML = 'Added. Add another, or <a href="#pick">go vote</a>.';
+    await refresh(true);
+  } catch (e) { $('#entryStatus').textContent = 'Not saved: ' + e.message; }
+  btn.disabled = false;
+};
+
+$('#showForm').onsubmit = async ev => {
+  ev.preventDefault();
+  const id = $('#showEntry').value;
+  if (!id) { $('#showStatus').textContent = 'Choose the task first.'; return; }
+  const fd = new FormData(ev.target);
+  $('#showStatus').textContent = 'Saving…';
+  try {
+    await apiPost({ action: 'showcase', id, fields: { appLink: fd.get('appLink'), lessons: fd.get('lessons') } });
+    $('#showStatus').textContent = 'Saved to the gallery.';
+    ev.target.reset();
+    await refresh(true);
+  } catch (e) { $('#showStatus').textContent = 'Not saved: ' + e.message; }
+};
+
+document.addEventListener('click', async ev => {
+  const v = ev.target.closest('[data-vote]');
+  if (v) {
+    const id = v.dataset.vote;
+    if (voted().includes(id)) return;
+    v.disabled = true;
+    try { await apiPost({ action: 'vote', id }); store.set('wk_voted', voted().concat(id)); await refresh(true); }
+    catch (e) { v.disabled = false; alertInline('Vote failed: ' + e.message); }
+    return;
+  }
+});
+document.addEventListener('change', async ev => {
+  const s = ev.target.closest('[data-status-for]');
+  if (!s) return;
+  s.disabled = true;
+  try { await apiPost({ action: 'status', id: s.dataset.statusFor, status: s.value, key: facKey }); await refresh(true); }
+  catch (e) { alertInline(e.message); s.disabled = false; }
+});
+function alertInline(msg) { $('#boardStatus').textContent = msg; }
+
+/* ---------- Facilitator mode ---------- */
+function applyFac() { document.body.classList.toggle('fac', !!facKey); $('#facToggle').textContent = facKey ? 'Facilitator mode on (click to turn off)' : 'Facilitator mode'; }
+$('#facToggle').onclick = async () => {
+  if (facKey) { facKey = ''; store.set('wk_fac_key', ''); applyFac(); return; }
+  $('#facForm').hidden = !$('#facForm').hidden;
+  if (!$('#facForm').hidden) $('#facKeyInput').focus();
+};
+$('#facForm').onsubmit = async ev => {
+  ev.preventDefault();
+  const k = $('#facKeyInput').value.trim();
+  if (!k) return;
+  try {
+    const r = LOCAL ? { ok: true } : await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'checkKey', key: k }) }).then(r => r.json());
+    if (!r.ok) { $('#facStatus').textContent = 'Wrong key.'; return; }
+    facKey = k; store.set('wk_fac_key', k); $('#facForm').hidden = true; $('#facKeyInput').value = ''; $('#facStatus').textContent = ''; applyFac();
+  } catch (e) { $('#facStatus').textContent = 'Could not check key: ' + e.message; }
+};
+
+/* ---------- Init ---------- */
+$('#groupSelect').innerHTML = CONFIG.groups.map(g => `<option>${esc(g)}</option>`).join('');
+if (myGroup()) $('#groupSelect').value = myGroup();
+$('#boardFilter').innerHTML = '<option value="all">All groups</option>' + CONFIG.groups.map(g => `<option>${esc(g)}</option>`).join('');
+if (myGroup()) $('#boardFilter').value = myGroup();
+$('#boardFilter').onchange = () => renderAll();
+$('#boardSort').onchange = () => renderAll();
+$('#refreshBtn').onclick = () => refresh();
+if (LOCAL) {
+  $('#modeBanner').hidden = false;
+  $('#modeBanner').innerHTML = 'Demo mode: no backend is configured, so entries are saved only in this browser. Set apiUrl in the page config to share entries. <button class="small ghost" id="seedBtn" type="button">Add example entries</button> <button class="small ghost" id="simBtn" type="button">Simulate the room</button> <button class="small ghost" id="resetBtn" type="button">Reset</button>';
+  const POOL = [
+    ['Formatting references for a different journal style', 'Every rejection means reformatting 120 references by hand.', 'Hours of zero-value work.'],
+    ['Writing the same course description in two languages', 'I write it in Finnish, then translate and paste both into Peppi.', 'Forty near-duplicates every spring.'],
+    ['Turning a call text into an application checklist', 'I read the call and build a requirements list in Word.', 'Easy to miss one requirement.'],
+    ['Updating lecture slides after a law changes', 'I hunt through decks for every mention of the old section.', 'I always miss one.'],
+    ['Drafting exam questions from the course reading', 'I reread the materials and write questions from scratch.', 'Slow and repetitive.'],
+    ['Summarising new case law for my research notes', 'I read each decision and write the same five-point summary.', 'The notes look the same every time.'],
+    ['Building a reading list from a pile of PDFs', 'I open each PDF and copy the bibliographic details.', 'Pure copy-paste.'],
+    ['Preparing the research group meeting agenda', 'I collect items from old notes and reformat them.', 'Nobody reads the agenda anyway.']
+  ];
+  let simTimer = null, simLeft = 0;
+  $('#simBtn').onclick = () => {
+    if (simTimer) { clearInterval(simTimer); simTimer = null; $('#simBtn').textContent = 'Simulate the room'; return; }
+    simLeft = 30; $('#simBtn').textContent = 'Stop simulation';
+    simTimer = setInterval(() => {
+      const list = store.get('wk_local_entries', []);
+      const names = ['Anna', 'Ville', 'Laura', 'Juha', 'Sanna', 'Mikko', 'Elina', 'Tuomas', ''];
+      if (list.length < 3 || (Math.random() < 0.35 && POOL.some(p => !list.find(e => e.title === p[0])))) {
+        const p = POOL.find(p => !list.find(e => e.title === p[0]));
+        if (p) list.push({ id: 'sim' + Date.now().toString(16), created: new Date().toISOString(), group: CONFIG.groups[Math.floor(Math.random() * CONFIG.groups.length)],
+          author: names[Math.floor(Math.random() * names.length)], title: p[0], description: p[1], pain: p[2], votes: 0, status: 'open', appLink: '', lessons: '' });
+      } else if (list.length) {
+        const e = list[Math.floor(Math.random() * list.length)]; e.votes = (e.votes || 0) + 1;
+      }
+      store.set('wk_local_entries', list); refresh(true);
+      if (--simLeft <= 0) $('#simBtn').click();
+    }, 2000);
+  };
+  $('#resetBtn').onclick = () => { store.set('wk_local_entries', []); store.set('wk_voted', []); refresh(); };
+  $('#seedBtn').onclick = () => {
+    const ex = [
+      ['Group 1', 'Anna', 'Turning reading notes into a literature table', 'I open each article, copy author, year, method and main claim into Excel by hand.', 'Two days of copy-paste for every new project.', 'per project', 'PDFs and my margin notes', 'A table with one row per source', 'I check the table instead of building it.', 7],
+      ['Group 1', 'Ville', 'Updating course descriptions every spring', 'Rewrite the same descriptions in Finnish and English and paste them into Peppi.', 'Forty near-identical texts, every year.', 'yearly', 'Last year\'s descriptions and the changes', 'Updated descriptions in both languages', 'Changes go in once and both languages come out consistent.', 5],
+      ['Group 2', 'Laura', 'Checking funding applications against the call text', 'Read the call, then go through my draft line by line to see that every requirement is covered.', 'Mechanical, slow and easy to get wrong.', 'a few times a year', 'The call text and my draft application', 'A checklist with missing items flagged', 'The formal check takes ten minutes, not an afternoon.', 6],
+      ['Group 2', '', 'Collecting publication data for the annual report', 'Chase colleagues by email and reformat everything they send.', 'Endless reminders and inconsistent formats.', 'yearly', 'Emails, CVs, Juuli exports', 'One clean list in the report format', 'Everyone fills one form and the list builds itself.', 3]
+    ];
+    const list = store.get('wk_local_entries', []);
+    ex.forEach(([group, author, title, description, pain, frequency, inputs, outputs, done, votes], i) =>
+      list.push({ id: 'ex' + i + Date.now().toString(16).slice(-4), created: new Date(Date.now() - (10 - i) * 60000).toISOString(), group, author, title, description, pain, frequency, inputs, outputs, done, votes, status: i === 0 ? 'picked' : 'open', appLink: '', lessons: '' }));
+    store.set('wk_local_entries', list);
+    refresh();
+  };
+}
+if (!location.hash && currentId()) history.replaceState(null, '', '#' + currentId());
+renderNav(); applyFac(); refresh();
+window.addEventListener('load', () => window.scrollTo(0, 0));
+setInterval(() => { renderNav(); if (!document.hidden) refresh(true); }, 20000);
+</script>
+</body>
+</html>
