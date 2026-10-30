@@ -17,6 +17,8 @@ const HEADERS = [
   'id', 'created', 'updated', 'group', 'author', 'title', 'description', 'pain',
   'frequency', 'inputs', 'outputs', 'done', 'votes', 'status', 'appLink', 'lessons'
 ];
+const SPRINT_SHEET = 'sprints';
+const SPRINT_HEADERS = ['id', 'created', 'entryId', 'group', 'sprint', 'did', 'tested', 'wrong', 'next'];
 const OPEN_FIELDS = ['group', 'author', 'title', 'description', 'pain', 'frequency', 'inputs', 'outputs', 'done'];
 const SHOWCASE_FIELDS = ['appLink', 'lessons'];
 const STATUSES = ['open', 'picked', 'built', 'parked'];
@@ -28,10 +30,43 @@ function setup() {
   if (!sh) sh = ss.insertSheet(SHEET_NAME);
   sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
   sh.setFrozenRows(1);
+  sprintSheet_();
+}
+
+function sprintSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(SPRINT_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(SPRINT_SHEET);
+    sh.getRange(1, 1, 1, SPRINT_HEADERS.length).setValues([SPRINT_HEADERS]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function readSprints_() {
+  const values = sprintSheet_().getDataRange().getValues();
+  return values.slice(1).filter(r => r[0]).map(r => {
+    const o = {};
+    SPRINT_HEADERS.forEach((h, i) => { o[h] = r[i] instanceof Date ? r[i].toISOString() : r[i]; });
+    o.sprint = Number(o.sprint || 0);
+    return o;
+  });
+}
+
+function logSprint_(s) {
+  if (!s.entryId) throw new Error('Choose the task first.');
+  if (!String(s.did || '').trim()) throw new Error('Say what you did.');
+  const sh = sprintSheet_();
+  const n = readSprints_().filter(x => String(x.entryId) === String(s.entryId)).length + 1;
+  const row = { id: Utilities.getUuid().slice(0, 8), created: new Date().toISOString(), sprint: n };
+  ['entryId', 'group', 'did', 'tested', 'wrong', 'next'].forEach(f => { row[f] = clean_(s[f]); });
+  sh.appendRow(SPRINT_HEADERS.map(h => row[h] == null ? '' : row[h]));
+  return row;
 }
 
 function doGet() {
-  return json_({ ok: true, entries: readAll_() });
+  return json_({ ok: true, entries: readAll_(), sprints: readSprints_() });
 }
 
 function doPost(e) {
@@ -55,6 +90,8 @@ function doPost(e) {
         if (body.key !== facKey_()) return json_({ ok: false, error: 'Wrong facilitator key.' });
         if (STATUSES.indexOf(body.status) < 0) return json_({ ok: false, error: 'Unknown status.' });
         return json_({ ok: true, entry: patch_(body.id, row => { row.status = body.status; }) });
+      case 'log':
+        return json_({ ok: true, sprint: logSprint_(body.sprint || {}) });
       case 'checkKey':
         return json_({ ok: body.key === facKey_() });
       default:

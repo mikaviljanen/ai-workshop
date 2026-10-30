@@ -37,3 +37,13 @@ You can also test without editing the file. Append `?api=YOUR_EXEC_URL` to the p
 - **Votes are only guarded per browser.** Someone could vote twice from two browsers. For a workshop of 16 colleagues, that risk is acceptable.
 - **The facilitator key is a lock against accidents, not a security measure.**
 - **The sheet sits in your Google account.** If the faculty prefers Microsoft 365, the same pattern is possible with a Microsoft Form and an embedded Excel, but participants would lose the voting.
+
+## Updating the script
+
+The sprint log needs the current `Code.gs`. When the script changes:
+
+1. Open the Apps Script editor from the sheet (**Extensions → Apps Script**).
+2. Replace all the code with the new `Code.gs` and save.
+3. Choose **Deploy → Manage deployments**, click the pencil, set **Version** to **New version**, and click **Deploy**.
+
+The web app URL stays the same. The script creates the `sprints` tab itself the first time someone logs a sprint.
