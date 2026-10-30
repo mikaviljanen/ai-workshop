@@ -221,17 +221,18 @@
       </div>
       <pre class="brief" id="briefOut">Pick a task to generate the brief.</pre>
     </div>
-    <h3>Who does what</h3>
+  </section>
+
+  <section id="build">
+    <h2>Build in ten-minute loops</h2>
+    <h3 style="margin-top:26px">First, split the roles</h3>
     <div class="grid">
       <div class="card"><strong>Driver.</strong> The facilitator types and runs the tool.</div>
       <div class="card"><strong>Owner.</strong> It's their task, so they decide what's good enough.</div>
       <div class="card"><strong>Tester.</strong> Makes fake inputs and tries to break the tool.</div>
       <div class="card"><strong>Sceptic.</strong> Asks every 20 minutes: would anyone use this, and how would we know it failed?</div>
     </div>
-  </section>
-
-  <section id="build">
-    <h2>Build in ten-minute loops</h2>
+    <h3>Then loop</h3>
     <div class="card">
       <ol class="steps">
         <li><strong>Smallest useful version first.</strong> Only the step that hurts most.</li>
@@ -310,8 +311,8 @@ const CONFIG = {
     { id: 'start', label: 'Start', from: '10:00', to: '10:20', what: 'Why we are here, and a live demo' },
     { id: 'name',  label: 'Name',  from: '10:20', to: '10:40', what: 'Everyone names a task they hate' },
     { id: 'pick',  label: 'Pick',  from: '10:40', to: '11:00', what: 'Each group picks the one that hurts most' },
-    { id: 'brief', label: 'Brief', from: '11:00', to: '11:15', what: 'Write the brief, split the roles' },
-    { id: 'build', label: 'Build', from: '11:15', to: '14:15', what: 'Build. Lunch 12:00–12:45' },
+    { id: 'brief', label: 'Brief', from: '11:00', to: '11:15', what: 'Write the brief for Claude' },
+    { id: 'build', label: 'Build', from: '11:15', to: '14:15', what: 'Split the roles and build. Lunch 12:00–12:45' },
     { id: 'show',  label: 'Show',  from: '14:15', to: '15:00', what: 'Demos, the case-law search, wrap-up' }
   ]
 };
