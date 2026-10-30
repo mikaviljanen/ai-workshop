@@ -122,6 +122,15 @@
   .log li { border-top: 1px solid var(--hair); padding: 10px 0; font-size: .95rem; }
   .log .n { color: var(--crimson); font-weight: 800; font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase; display: block; margin-bottom: 2px; }
   .log b { color: var(--green); }
+  .checklist { margin-top: 30px; background: var(--paper-2); border: 1px solid var(--hair); border-radius: var(--r); padding: 18px 22px; }
+  .checklist .head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+  .checklist .head strong { font: 800 1.2rem var(--serif); color: var(--green); }
+  .checklist .count { color: var(--crimson); font-weight: 800; font-size: .74rem; letter-spacing: 2px; text-transform: uppercase; }
+  .checklist label.tick { display: flex; gap: 12px; align-items: center; font-weight: 500; margin: 0; padding: 9px 4px; border-top: 1px solid var(--hair); cursor: pointer; }
+  .checklist label.tick input { width: 20px; height: 20px; accent-color: var(--green); margin: 0; flex: none; cursor: pointer; }
+  .checklist label.tick.done span { color: var(--grey); text-decoration: line-through; text-decoration-color: var(--hair); }
+  .checklist.all-done { border-color: var(--lime); box-shadow: 0 0 0 2px var(--lime) inset; }
+  .checklist select { width: auto; padding: 4px 8px; font-size: .9rem; }
   footer { text-align: center; color: var(--cream); font-size: .85rem; padding: 6px 24px 40px; opacity: .8; }
   @media (max-width: 720px) {
     header h1 { font-size: 2.3rem; } header .logo { width: 140px; margin-bottom: 22px; }
@@ -139,7 +148,7 @@
     <svg class="logo" role="img" aria-label="University of Turku" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 922 285"><path fill="#FFFFFF" fill-rule="evenodd" d="M123 280C122 279 122 276 122 274C122 269 122 268 120 266C116 263 116 257 119 253L122 250L121 231C121 209 119 190 118 183C116 176 110 173 104 178C99 182 91 180 91 174C91 170 89 169 86 170C83 170 82 170 80 168C77 166 77 165 77 161C78 156 77 156 74 154C68 152 67 148 70 143C71 140 71 140 68 137C64 134 64 129 67 126C69 123 69 120 67 120C66 120 63 114 64 112C64 111 65 110 66 108C68 106 68 106 67 104C64 100 64 96 68 93C69 92 71 91 71 91C74 91 75 89 74 86C72 82 74 77 79 75C82 74 83 72 79 71C77 70 76 66 62 31L57 17L59 14C62 10 65 8 69 7C75 6 77 8 77 14C78 16 78 21 79 24C80 26 80 31 81 35C83 50 86 66 88 78L90 91L87 98C77 116 76 134 85 152C93 170 113 175 117 160C118 156 118 136 117 115C116 97 115 94 108 90C104 88 103 87 103 84C103 76 111 72 126 72C135 72 139 73 144 76C147 78 147 79 147 83C147 88 147 88 142 90C137 94 135 97 134 107C132 120 133 158 134 162C140 172 150 171 160 160C169 150 172 139 172 124C171 113 170 110 165 99C161 92 160 88 162 82C162 80 163 76 164 72C166 57 170 34 172 22C174 9 175 7 180 7C186 7 193 13 193 18C193 19 190 27 187 35C184 43 180 54 178 59C175 66 174 69 172 70C168 72 168 74 172 75C176 76 178 81 177 86C176 88 176 90 177 90C185 92 188 97 185 102C183 106 183 106 185 109C188 112 188 116 184 119C182 122 181 123 184 126C188 129 187 134 183 137C180 140 180 140 181 143C184 148 183 152 177 155C174 156 174 156 174 160C174 166 170 170 165 170C162 169 160 170 160 174C160 177 156 180 153 180C151 180 148 179 146 178C138 174 134 176 132 188C131 196 129 225 129 240C129 250 129 250 132 254C136 258 136 261 132 266C130 268 129 270 129 274C129 279 129 280 127 280C125 280 124 280 123 280ZM517 220C487 210 478 170 501 148C510 139 518 136 532 136C546 136 554 139 563 148C582 167 579 200 558 215C547 222 530 224 517 220ZM706 221C696 218 697 219 697 209C697 200 696 200 705 204C712 206 728 206 732 203C738 198 735 193 723 188C709 182 705 180 701 175C694 168 694 155 699 147C701 144 708 139 713 137C720 135 743 136 747 139C748 140 749 156 748 156C747 156 745 155 742 154C736 151 722 151 718 153C711 158 712 164 722 169C726 170 732 173 736 175C747 180 753 188 753 198C753 208 748 216 738 220C731 222 713 223 706 221ZM860 220C842 214 831 199 830 179C830 160 841 144 858 138C865 136 881 135 887 137C907 144 919 160 918 182C917 200 906 214 890 220C883 222 867 223 860 220ZM337 220C336 220 336 213 336 204L336 188L330 178C326 172 320 161 315 154C311 146 307 139 307 138C307 137 309 137 316 137L326 137L329 141C330 144 334 151 338 157C341 164 345 169 345 169C346 169 347 168 348 166C349 164 351 160 353 158C354 155 358 149 360 145L364 137L374 137C380 137 384 137 384 138C384 138 377 150 369 163L354 188L354 203C354 212 354 220 354 220C353 221 338 221 337 220ZM393 220C393 220 393 201 393 179C393 157 393 139 393 138C393 137 397 137 402 137L411 137L411 171L412 205L427 205L442 206L442 213L442 220L418 221C402 221 393 221 393 220ZM456 220C455 219 455 207 455 178L456 138L464 138L474 138L474 179L474 220L465 221C460 221 457 221 456 220ZM591 220C591 220 591 201 591 179C591 157 591 138 591 138C591 137 597 137 610 137C629 138 630 138 635 140C646 146 650 152 650 164C649 182 640 191 620 192L610 192L609 206L608 220L600 221C594 221 591 221 591 220ZM664 220C663 220 663 201 663 178L663 137L672 137L681 137L681 179L680 220L672 221C668 221 664 221 664 220ZM782 220C782 219 782 204 782 186L782 152L770 152L759 152L759 144L759 137L791 137L824 138L824 144L824 152L812 152C804 152 801 152 801 153C801 154 801 169 801 186C801 208 801 219 800 220C798 222 783 222 782 220ZM93 219C91 218 91 217 93 207C94 204 95 199 96 194C98 186 98 186 101 185C103 184 104 184 104 184C106 185 103 218 102 219C100 220 96 220 93 219ZM148 219C148 218 147 210 147 201L146 184L149 184C153 185 154 186 155 193C156 196 157 203 158 208L160 216L158 218C156 220 150 221 148 219ZM77 217C74 215 74 213 81 198C88 180 88 180 91 183L93 185L90 198C89 205 88 212 87 213C86 218 83 219 77 217ZM165 217C165 216 163 210 162 204C158 184 158 185 160 183C162 180 162 180 165 186C170 197 174 207 176 210C177 213 177 213 175 216C172 218 167 219 165 217ZM62 210C56 206 56 206 68 189C77 176 79 174 81 174C87 174 87 174 80 189C79 192 76 197 74 202C70 211 68 212 62 210ZM178 204C176 201 175 198 175 198C175 197 167 180 166 178C164 175 165 174 168 174C172 173 172 173 179 183C195 206 195 206 189 209C182 212 181 212 178 204ZM543 203C559 196 562 172 550 160C533 143 507 155 507 180C507 199 526 211 543 203ZM882 204C893 201 899 192 899 179C899 167 894 158 884 154C866 147 849 160 849 179C849 198 864 210 882 204ZM48 200C46 199 45 198 44 196C43 194 43 194 46 190C49 188 55 182 61 176C72 166 72 166 74 168C74 169 75 170 75 171C74 174 54 202 52 202C51 202 49 201 48 200ZM191 193C187 188 183 181 180 178C176 171 175 170 177 168C179 166 180 166 191 178C198 184 204 190 206 192C209 195 209 195 204 199C199 204 198 203 191 193ZM36 190C33 189 30 184 30 182C30 180 36 176 49 168C66 157 67 156 70 157C71 158 72 159 72 159C72 160 40 191 39 191C39 191 38 190 36 190ZM204 184C187 168 179 160 179 159C179 159 180 158 182 157C184 156 185 157 197 165C205 170 213 175 216 177C222 181 222 182 218 187C214 192 212 192 204 184ZM624 176C629 174 631 170 631 165C631 156 626 152 615 152L609 152L609 164C609 170 609 176 610 176C611 178 621 177 624 176ZM23 173C21 171 20 169 20 166C20 163 20 163 24 161C34 156 62 146 63 146C63 147 63 148 63 150C64 153 63 154 46 165C36 171 27 176 27 176C26 176 24 175 23 173ZM220 175C219 174 211 169 203 163C188 154 187 152 187 150C187 148 188 147 188 146C189 146 212 155 222 160C224 160 227 161 228 162C232 163 232 168 228 173C226 176 224 177 220 175ZM14 156C12 153 11 152 11 149L12 145L28 142C54 136 60 136 61 137C64 139 63 141 51 146C44 148 36 151 34 153C28 155 18 159 17 159C16 159 15 158 14 156ZM228 157C225 156 221 154 219 153C216 152 208 149 201 146C194 143 188 140 188 139C188 136 191 136 198 137C217 140 239 144 239 145C241 147 239 154 237 157C234 160 234 160 228 157ZM9 138C5 134 4 127 6 124C7 122 10 122 34 123C48 124 60 125 60 125C62 126 59 131 57 131C56 132 50 133 44 134C38 135 28 137 22 138C9 140 11 140 9 138ZM231 138C227 138 218 136 210 134C203 133 196 132 194 131C192 131 189 126 191 125C192 124 243 122 244 123C246 125 246 134 243 137C241 140 240 140 231 138ZM38 119C32 118 24 118 18 118C6 118 5 117 5 108C5 100 6 99 18 102C26 104 46 110 57 114C58 114 59 114 59 115C59 115 59 116 60 118C60 120 60 120 53 120C50 120 42 119 38 119ZM191 119C191 115 192 114 199 112C223 105 240 100 242 100C246 100 248 109 245 115L243 118L227 118C219 119 207 119 201 120C192 120 191 120 191 119ZM408 108C398 106 391 99 387 90C386 86 386 82 386 56L386 26L394 25L403 25L403 51C403 67 403 79 404 82C408 95 429 98 435 85C437 82 437 78 437 53L437 25L446 25C452 25 455 25 455 26C455 27 455 41 455 57C455 91 454 94 446 101C437 109 422 112 408 108ZM574 109C565 106 558 101 554 94C552 90 552 88 551 57L551 25L560 25L568 26L569 54C569 84 569 86 575 90C581 94 592 94 597 89C602 85 602 84 602 53C602 39 602 27 603 26C603 25 606 25 612 25L620 26L621 53C621 82 620 89 616 95C612 102 606 106 598 108C593 110 579 110 574 109ZM50 107C46 106 39 104 34 102C15 97 10 95 8 94C7 92 7 85 8 81C11 75 10 75 52 99C62 105 63 106 61 108C59 109 58 109 50 107ZM190 108C190 107 189 106 189 106C189 104 237 77 239 78C246 80 245 96 239 96C238 96 234 97 231 98C227 99 223 100 221 101C215 103 203 106 198 108C193 109 192 109 190 108ZM334 108C333 108 333 92 333 74L333 40L322 40L310 40L310 32L310 25L342 25L375 25L375 32L374 40L363 40L352 40L351 74L350 108L342 109C338 109 334 109 334 108ZM475 108C474 108 474 89 474 66L474 25L492 25C519 25 526 27 532 38C535 43 536 44 536 52C536 60 535 61 532 66C531 68 528 72 525 73C523 75 521 76 521 77C521 77 525 84 529 92C534 102 537 108 536 108C536 109 532 109 527 109L518 108L511 95C504 80 503 79 498 79C492 79 492 79 492 94L492 108L484 109C479 109 475 109 475 108ZM640 108C638 107 639 24 640 24C641 24 652 34 665 47C678 59 689 70 690 70C691 70 691 67 691 48L691 25L700 25L709 25L709 67C709 93 709 109 708 109C707 109 700 102 668 72C664 67 659 63 658 63C657 63 657 66 657 86L656 108L648 109C644 109 640 109 640 108ZM48 92C32 82 31 82 28 81C16 74 15 73 15 70C13 65 18 56 22 56C23 56 32 64 43 74C60 91 62 92 61 95C61 96 60 98 59 98C59 98 54 95 48 92ZM190 95C189 93 189 92 208 74C218 64 227 56 228 56C231 56 234 59 236 64C238 70 237 73 229 77C225 79 218 83 213 86C207 89 203 92 202 92C202 92 200 93 197 95C192 99 191 99 190 95ZM45 70C24 50 24 50 28 42C30 38 34 35 36 37C37 38 39 40 41 43C48 55 64 80 66 82C69 86 68 88 66 88C64 88 58 82 45 70ZM183 86C183 86 185 82 187 78C193 70 212 40 214 37C216 33 225 42 225 48C225 51 224 53 216 60C211 65 203 73 197 78C188 88 183 90 183 86ZM63 69C60 64 53 54 49 47C40 32 39 30 42 26C46 20 52 18 54 22C54 24 58 33 62 43C66 53 70 64 71 67C73 72 73 72 72 75C71 76 70 78 69 78C69 78 66 74 63 69ZM179 75C177 72 177 72 179 68C180 65 182 62 182 60C182 59 183 57 184 56C184 55 187 48 190 40C197 22 198 20 200 20C204 20 211 27 211 31C211 32 207 39 202 47C197 55 190 65 188 70C185 74 182 78 182 78C182 78 180 77 179 75ZM106 66C105 65 104 61 104 57C104 49 104 49 115 33C119 27 119 26 119 21C118 15 119 7 121 5C123 4 123 5 124 10C125 13 126 17 128 19C129 22 130 25 129 25C129 26 126 30 123 34C114 45 112 49 112 60C112 68 112 68 110 69C109 69 108 68 106 66ZM134 68C130 67 126 66 123 67C118 67 117 66 117 58C117 51 120 45 129 33C133 28 137 22 138 21C140 17 141 18 141 25C141 32 139 37 133 48C129 54 128 58 130 60C133 63 138 58 136 54C135 51 139 43 142 43C144 43 146 54 146 59C145 64 142 69 141 69C140 69 137 68 134 68ZM511 63C515 61 517 57 517 52C517 43 512 40 500 40L492 40L492 52L492 64L500 64C505 64 510 64 511 63ZM110 24C110 20 110 17 110 17C111 17 114 22 114 24C114 26 111 32 110 32C110 32 110 29 110 24Z"/></svg>
     <p class="kicker">Faculty of Law · Staff AI workshop</p>
     <h1>Making work suck less<span class="dot">.</span></h1>
-    <p class="sub">Bring the task you hate. Leave with a tool. 10:15 to 15:00.</p>
+    <p class="sub">Bring the task you hate. Leave with a tool, maybe. 10:15 to 15:00.</p>
     <nav id="nav"></nav>
   </div>
 </header>
@@ -378,15 +387,16 @@ const apiUrl = new URLSearchParams(location.search).get('api') || CONFIG.apiUrl;
 const LOCAL = !apiUrl;
 let entries = [];
 let sprints = [];
+let checks = [];
 let facKey = store.get('wk_fac_key', '');
 
 /* ---------- API ---------- */
 async function apiList() {
-  if (LOCAL) return { entries: store.get('wk_local_entries', []), sprints: store.get('wk_local_sprints', []) };
+  if (LOCAL) return { entries: store.get('wk_local_entries', []), sprints: store.get('wk_local_sprints', []), checks: store.get('wk_local_checks', []) };
   const r = await fetch(apiUrl + (apiUrl.includes('?') ? '&' : '?') + 't=' + Date.now());
   const j = await r.json();
   if (!j.ok) throw new Error(j.error || 'Could not load entries');
-  return { entries: j.entries || [], sprints: j.sprints || [] };
+  return { entries: j.entries || [], sprints: j.sprints || [], checks: j.checks || [] };
 }
 async function apiPost(body) {
   if (LOCAL) return localPost(body);
@@ -408,6 +418,12 @@ function localPost(body) {
   else if (body.action === 'status') { entry = find(body.id); entry.status = body.status; }
   else if (body.action === 'showcase') { entry = find(body.id); Object.assign(entry, body.fields); }
   else if (body.action === 'checkKey') { return { ok: true }; }
+  else if (body.action === 'check') {
+    const cs = store.get('wk_local_checks', []), c = body.check;
+    const ex = cs.find(x => x.group === c.group && x.item === c.item);
+    if (ex) ex.done = c.done; else cs.push({ group: c.group, item: c.item, done: c.done });
+    store.set('wk_local_checks', cs); return { ok: true, check: c };
+  }
   else if (body.action === 'log') {
     const sp = store.get('wk_local_sprints', []);
     const s = Object.assign({ id: Math.random().toString(16).slice(2, 10), created: now }, body.sprint);
@@ -423,7 +439,7 @@ async function refresh(quiet) {
   try {
     if (!quiet) $('#boardStatus').textContent = 'Loading…';
     const data = await apiList();
-    entries = data.entries; sprints = data.sprints;
+    entries = data.entries; sprints = data.sprints; checks = data.checks;
     renderAll();
     $('#boardStatus').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   } catch (e) {
@@ -523,6 +539,7 @@ function renderAll() {
   opts('#showEntry', true);
   opts('#logEntry', true);
   renderBrief();
+  renderChecklists();
 
   const built = shown().filter(e => e.appLink || e.lessons);
   $('#gallery').innerHTML = built.length ? built.map(e => {
@@ -604,6 +621,55 @@ $('#logForm').onsubmit = async ev => {
   }
   btn.disabled = false;
 };
+
+/* ---------- Group checklists ---------- */
+const CHECKLISTS = {
+  start: ['Sat down with our group', 'Our facilitator has Claude open', 'We know what is off limits today'],
+  name: ['Everyone has added at least one task', 'We have read each other\'s entries'],
+  pick: ['Everyone has voted', 'We picked one task', 'The facilitator marked it as picked', 'We have a second task in reserve'],
+  brief: ['Chose the kind of tool', 'Added any extra context', 'The brief is in Claude'],
+  build: ['Roles split', 'The tester has a fake input ready', 'First sprint logged', 'Sprint logged before lunch', 'The tool works on an input it has not seen'],
+  show: ['Gallery entry saved', 'Our demo answers the five questions', 'We know who would do what on Monday']
+};
+CONFIG.agenda.forEach(a => {
+  const s = document.getElementById(a.id); if (!s || !CHECKLISTS[a.id]) return;
+  const box = document.createElement('div'); box.className = 'checklist'; box.dataset.step = a.id;
+  s.appendChild(box);
+});
+let checkErr = '';
+function renderChecklists() {
+  const g = myGroup();
+  document.querySelectorAll('.checklist').forEach(box => {
+    const items = CHECKLISTS[box.dataset.step];
+    const picker = `<select class="groupPick">${['<option value="">Choose your group…</option>'].concat(CONFIG.groups.map(x => `<option ${x === g ? 'selected' : ''}>${esc(x)}</option>`)).join('')}</select>`;
+    if (!g) { box.className = 'checklist'; box.innerHTML = `<div class="head"><strong>Before you move on</strong>${picker}</div><p class="muted" style="margin:4px 0 0">Choose your group to see its checklist.</p>`; return; }
+    const done = items.filter(it => checks.some(c => c.group === g && c.item === it && c.done)).length;
+    box.className = 'checklist' + (done === items.length ? ' all-done' : '');
+    box.innerHTML = `<div class="head"><strong>Before you move on</strong><span class="row" style="gap:10px"><span class="count">${esc(g)} · ${done}/${items.length}</span>${picker}</span></div>` +
+      items.map(it => { const on = checks.some(c => c.group === g && c.item === it && c.done);
+        return `<label class="tick ${on ? 'done' : ''}"><input type="checkbox" data-item="${esc(it)}" ${on ? 'checked' : ''}><span>${esc(it)}</span></label>`; }).join('') +
+      (checkErr ? `<p class="status" style="color:var(--crimson);margin:8px 0 0">${esc(checkErr)}</p>` : '');
+  });
+}
+document.addEventListener('change', async ev => {
+  if (ev.target.matches('.groupPick')) {
+    store.set('wk_group', ev.target.value);
+    if (ev.target.value) { $('#groupSelect').value = ev.target.value; $('#boardFilter').value = ev.target.value; }
+    renderAll(); return;
+  }
+  const cb = ev.target.closest('.checklist input[data-item]');
+  if (!cb) return;
+  const c = { group: myGroup(), item: cb.dataset.item, done: cb.checked };
+  const ex = checks.find(x => x.group === c.group && x.item === c.item);
+  if (ex) ex.done = c.done; else checks.push(c);
+  checkErr = ''; renderChecklists();
+  try { await apiPost({ action: 'check', check: c }); }
+  catch (e) {
+    const x = checks.find(y => y.group === c.group && y.item === c.item); if (x) x.done = !c.done;
+    checkErr = /Unknown action/.test(e.message) ? 'Tick not saved: the Google script needs updating.' : 'Tick not saved: ' + e.message;
+    renderChecklists();
+  }
+});
 
 /* ---------- Brief ---------- */
 const SHAPES = {
@@ -750,7 +816,7 @@ if (LOCAL) {
       if (--simLeft <= 0) $('#simBtn').click();
     }, 2000);
   };
-  $('#resetBtn').onclick = () => { store.set('wk_local_sprints', []); store.set('wk_local_entries', []); store.set('wk_voted', []); refresh(); };
+  $('#resetBtn').onclick = () => { store.set('wk_local_checks', []); store.set('wk_local_sprints', []); store.set('wk_local_entries', []); store.set('wk_voted', []); refresh(); };
   $('#seedBtn').onclick = () => {
     const ex = [
       ['Group 1', 'Anna', 'Turning reading notes into a literature table', 'I open each article, copy author, year, method and main claim into Excel by hand.', 'Two days of copy-paste for every new project.', 'per project', 'PDFs and my margin notes', 'A table with one row per source', 'I check the table instead of building it.', 7],

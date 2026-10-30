@@ -19,6 +19,8 @@ const HEADERS = [
 ];
 const SPRINT_SHEET = 'sprints';
 const SPRINT_HEADERS = ['id', 'created', 'entryId', 'group', 'sprint', 'did', 'tested', 'wrong', 'next'];
+const CHECK_SHEET = 'checks';
+const CHECK_HEADERS = ['group', 'item', 'done', 'updated'];
 const OPEN_FIELDS = ['group', 'author', 'title', 'description', 'pain', 'frequency', 'inputs', 'outputs', 'done'];
 const SHOWCASE_FIELDS = ['appLink', 'lessons'];
 const STATUSES = ['open', 'picked', 'built', 'parked'];
@@ -31,6 +33,7 @@ function setup() {
   sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
   sh.setFrozenRows(1);
   sprintSheet_();
+  checkSheet_();
 }
 
 function sprintSheet_() {
@@ -42,6 +45,36 @@ function sprintSheet_() {
     sh.setFrozenRows(1);
   }
   return sh;
+}
+
+function checkSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(CHECK_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(CHECK_SHEET);
+    sh.getRange(1, 1, 1, CHECK_HEADERS.length).setValues([CHECK_HEADERS]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function readChecks_() {
+  return checkSheet_().getDataRange().getValues().slice(1).filter(r => r[0] !== '')
+    .map(r => ({ group: String(r[0]), item: String(r[1]), done: r[2] === true || r[2] === 'TRUE' }));
+}
+
+function setCheck_(c) {
+  const group = clean_(c.group).slice(0, 60), item = clean_(c.item).slice(0, 60);
+  if (!group || !item) throw new Error('Group and item are required.');
+  const sh = checkSheet_(), values = sh.getDataRange().getValues(), now = new Date().toISOString();
+  for (let i = 1; i < values.length; i++) {
+    if (String(values[i][0]) === group && String(values[i][1]) === item) {
+      sh.getRange(i + 1, 3, 1, 2).setValues([[!!c.done, now]]);
+      return { group, item, done: !!c.done };
+    }
+  }
+  sh.appendRow([group, item, !!c.done, now]);
+  return { group, item, done: !!c.done };
 }
 
 function readSprints_() {
@@ -66,7 +99,7 @@ function logSprint_(s) {
 }
 
 function doGet() {
-  return json_({ ok: true, entries: readAll_(), sprints: readSprints_() });
+  return json_({ ok: true, entries: readAll_(), sprints: readSprints_(), checks: readChecks_() });
 }
 
 function doPost(e) {
@@ -92,6 +125,8 @@ function doPost(e) {
         return json_({ ok: true, entry: patch_(body.id, row => { row.status = body.status; }) });
       case 'log':
         return json_({ ok: true, sprint: logSprint_(body.sprint || {}) });
+      case 'check':
+        return json_({ ok: true, check: setCheck_(body.check || {}) });
       case 'checkKey':
         return json_({ ok: body.key === facKey_() });
       default:
